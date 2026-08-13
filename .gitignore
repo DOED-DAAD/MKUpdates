@@ -1,0 +1,7 @@
+/target
+*.bai
+*.fai
+*.gz
+*.fasta
+*.bam
+*.gzi
