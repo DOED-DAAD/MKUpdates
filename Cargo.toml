@@ -2,8 +2,13 @@
 name = "MKUpdates"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.97.1"
 
 [dependencies]
 bio = "4.0.1"
 clap = { version = "4.6.6", features = ["derive"] }
+flate2 = "1.1.9"
 rust-htslib = "1.0.1"
+
+[profile.release]
+lto = true
