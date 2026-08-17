@@ -20,7 +20,7 @@ fn main() -> Result<(), std::io::Error> {
     let cli = Cli::parse();
     let _ = match cli.command {
         Commands::Mask(args) => mask::mask(args),
-        _ => Result::Ok(()),
+        Commands::FastqQuality(args) => fastq_quality::FastQQuality::get_fastq_stats(args),
     };
 
     Ok(())
