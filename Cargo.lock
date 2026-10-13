@@ -9,6 +9,7 @@ dependencies = [
  "bio",
  "clap",
  "flate2",
+ "paste",
  "rust-htslib",
 ]
 

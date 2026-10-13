@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 
 mod fastq_quality;
+mod mash;
 mod mask;
 
 #[derive(Parser, Debug)]
@@ -14,6 +15,7 @@ struct Cli {
 enum Commands {
     Mask(mask::MaskArgs),
     FastqQuality(fastq_quality::FastqQualityArgs),
+    MashTopHit(mash::MashTopHitArgs),
 }
 
 fn main() -> Result<(), std::io::Error> {
@@ -21,6 +23,7 @@ fn main() -> Result<(), std::io::Error> {
     let _ = match cli.command {
         Commands::Mask(args) => mask::mask(args),
         Commands::FastqQuality(args) => fastq_quality::FastQQuality::get_fastq_stats(args),
+        Commands::MashTopHit(args) => mash::get_mash_top_hit(args),
     };
 
     Ok(())
