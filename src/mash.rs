@@ -35,6 +35,7 @@ pub struct MashMetagenomicArgs {
     pub percent_identity_cutoff: f64,
 }
 
+#[derive(Debug)]
 #[allow(dead_code)]
 struct MashHit {
     identity: f64,
@@ -112,18 +113,18 @@ fn get_equivalent_taxa(
     for (key, value) in &json_data {
         for taxa_string in value.iter() {
             // assuming below actually executes, as map is lazy.
-            let _ = taxa_string
+            for taxa in taxa_string
                 .split(REPORT_TAXON_DELIMITER)
                 .filter(|x| x.starts_with(taxonomic_level))
-                .map(|x| {
-                    if let Some(set) = equivalent_taxa.get_mut(key) {
-                        set.insert(x.to_string());
-                    } else {
-                        let mut set = HashSet::new();
-                        set.insert(x.to_string());
-                        equivalent_taxa.insert(key.clone(), set);
-                    }
-                });
+            {
+                if let Some(set) = equivalent_taxa.get_mut(key) {
+                    set.insert(taxa.to_string());
+                } else {
+                    let mut set = HashSet::new();
+                    set.insert(taxa.to_string());
+                    equivalent_taxa.insert(key.clone(), set);
+                }
+            }
         }
     }
 
@@ -141,12 +142,15 @@ fn parse_flatten_queries(mash_data: Vec<MashHit>) -> HashMap<String, HashSet<Str
     let mut flattened_queries: HashMap<String, HashSet<String>> = HashMap::new();
 
     for mash_hit in mash_data {
-        let _ = mash_hit.query_note.split(REPORT_TAXON_DELIMITER).map(|x| {
-            flattened_queries
-                .entry(get_taxa_level(x))
-                .or_default()
-                .insert(x.to_string())
-        });
+        mash_hit
+            .query_note
+            .split(REPORT_TAXON_DELIMITER)
+            .for_each(|x| {
+                flattened_queries
+                    .entry(get_taxa_level(x))
+                    .or_default()
+                    .insert(x.to_string());
+            });
     }
     flattened_queries
     // Now flattened_queries contains a mapping from query_id to a vector of MashHit records.
@@ -161,7 +165,8 @@ fn normalize_taxa(
         .get_mut(&taxa_level)
         .expect("Could not find taxa level in equivalent taxa.");
     for (key, value) in equivalent_taxa {
-        if value.is_disjoint(levels) {
+        if !value.is_disjoint(levels) {
+            dbg!("No value: {}", value);
             levels.retain(|item| !value.contains(item));
             levels.insert(key.clone());
         }
