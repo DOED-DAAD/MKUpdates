@@ -16,6 +16,7 @@ enum Commands {
     Mask(mask::MaskArgs),
     FastqQuality(fastq_quality::FastqQualityArgs),
     MashTopHit(mash::MashTopHitArgs),
+    MashMetagenomicArgs(mash::MashMetagenomicArgs),
 }
 
 fn main() -> Result<(), std::io::Error> {
@@ -24,6 +25,7 @@ fn main() -> Result<(), std::io::Error> {
         Commands::Mask(args) => mask::mask(args),
         Commands::FastqQuality(args) => fastq_quality::FastQQuality::get_fastq_stats(args),
         Commands::MashTopHit(args) => mash::get_mash_top_hit(args),
+        Commands::MashMetagenomicArgs(args) => mash::check_metagenomic(args),
     };
 
     Ok(())
